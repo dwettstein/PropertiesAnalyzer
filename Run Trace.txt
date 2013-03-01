@@ -1,3 +1,0 @@
-cd D:\David\Eclipse Projects\PropertiesAnalyzer\bin
-
-Java -cp "D:\David\Eclipse Projects\PropertiesAnalyzer\tools.jar;D:\David\Eclipse Projects\PropertiesAnalyzer\bin" Trace Count
