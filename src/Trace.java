@@ -65,7 +65,7 @@ public class Trace {
 	private int debugTraceMode = 0;
 
 	// Do we want to watch assignments to fields
-	private boolean watchFields = true;
+	private boolean watchFields = false;
 
 	// Class patterns for which we don't want events
 	private String[] excludes = { "java.*", "javax.*", "sun.*", "com.sun.*" };
