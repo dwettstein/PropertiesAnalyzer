@@ -1,4 +1,4 @@
-package trace;
+package props;
 
 /*
  * Copyright (c) 2001, Oracle and/or its affiliates. All rights reserved.

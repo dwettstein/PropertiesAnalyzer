@@ -1,4 +1,4 @@
-package trace;
+package props;
 import java.util.Properties;
 
 class Count {
