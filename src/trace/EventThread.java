@@ -1,3 +1,5 @@
+package trace;
+
 /*
  * Copyright (c) 2001, Oracle and/or its affiliates. All rights reserved.
  * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -83,7 +85,7 @@ public class EventThread extends Thread {
 	private boolean vmDied = true; // VMDeath occurred
 
 	// Maps ThreadReference to ThreadTrace instances
-	private Map<ThreadReference, ThreadTrace> traceMap = new HashMap<>();
+	private Map<ThreadReference, IThreadTrace> traceMap = new HashMap<>();
 
 	EventThread(VirtualMachine vm, String[] excludes, PrintWriter writer) {
 		super("event-handler");
@@ -138,14 +140,14 @@ public class EventThread extends Thread {
 		for (int i = 0; i < excludes.length; ++i) {
 			menr.addClassExclusionFilter(excludes[i]);
 		}
-		menr.setSuspendPolicy(EventRequest.SUSPEND_NONE);
+		menr.setSuspendPolicy(EventRequest.SUSPEND_ALL);
 		menr.enable();
 
 		MethodExitRequest mexr = mgr.createMethodExitRequest();
 		for (int i = 0; i < excludes.length; ++i) {
 			mexr.addClassExclusionFilter(excludes[i]);
 		}
-		mexr.setSuspendPolicy(EventRequest.SUSPEND_NONE);
+		mexr.setSuspendPolicy(EventRequest.SUSPEND_ALL);
 		mexr.enable();
 
 		ThreadDeathRequest tdr = mgr.createThreadDeathRequest();
@@ -158,7 +160,6 @@ public class EventThread extends Thread {
 			for (int i = 0; i < excludes.length; ++i) {
 				cpr.addClassExclusionFilter(excludes[i]);
 			}
-			cpr.addClassFilter("java.util.Properties");
 			cpr.setSuspendPolicy(EventRequest.SUSPEND_ALL);
 			cpr.enable();
 		}
@@ -168,13 +169,13 @@ public class EventThread extends Thread {
 	 * This class keeps context on events in one thread. In this implementation,
 	 * context is the indentation prefix.
 	 */
-	class ThreadTrace {
+	class ThreadTrace extends AbstractThreadTrace {
 		final ThreadReference thread;
 		final String baseIndent;
 		static final String threadDelta = "                     ";
 		StringBuffer indent;
 
-		ThreadTrace(ThreadReference thread) {
+		public ThreadTrace(ThreadReference thread) {
 			this.thread = thread;
 			this.baseIndent = nextBaseIndent;
 			indent = new StringBuffer(baseIndent);
@@ -182,28 +183,28 @@ public class EventThread extends Thread {
 			println("====== " + thread.name() + " ======");
 		}
 
-		private void println(String str) {
+		public void println(String str) {
 			writer.print(indent);
 			writer.println(str);
 		}
 
-		void methodEntryEvent(MethodEntryEvent event) {
+		public void methodEntryEvent(MethodEntryEvent event) {
 			println(event.method().name() + "  --  "
 					+ event.method().declaringType().name());
 			indent.append("| ");
 		}
 
-		void methodExitEvent(MethodExitEvent event) {
+		public void methodExitEvent(MethodExitEvent event) {
 			indent.setLength(indent.length() - 2);
 		}
 
-		void fieldWatchEvent(ModificationWatchpointEvent event) {
+		public void fieldWatchEvent(ModificationWatchpointEvent event) {
 			Field field = event.field();
 			Value value = event.valueToBe();
 			println("    " + field.name() + " = " + value);
 		}
 
-		void exceptionEvent(ExceptionEvent event) {
+		public void exceptionEvent(ExceptionEvent event) {
 			println("Exception: " + event.exception() + " catch: "
 					+ event.catchLocation());
 
@@ -217,7 +218,7 @@ public class EventThread extends Thread {
 		}
 
 		// Step to exception catch
-		void stepEvent(StepEvent event) {
+		public void stepEvent(StepEvent event) {
 			// Adjust call depth
 			int cnt = 0;
 			indent = new StringBuffer(baseIndent);
@@ -233,7 +234,7 @@ public class EventThread extends Thread {
 			mgr.deleteEventRequest(event.request());
 		}
 
-		void threadDeathEvent(ThreadDeathEvent event) {
+		public void threadDeathEvent(ThreadDeathEvent event) {
 			indent = new StringBuffer(baseIndent);
 			println("====== " + thread.name() + " end ======");
 		}
@@ -243,10 +244,12 @@ public class EventThread extends Thread {
 	 * Returns the ThreadTrace instance for the specified thread, creating one
 	 * if needed.
 	 */
-	ThreadTrace threadTrace(ThreadReference thread) {
-		ThreadTrace trace = traceMap.get(thread);
+	IThreadTrace threadTrace(ThreadReference thread) {
+		IThreadTrace trace = traceMap.get(thread);
 		if (trace == null) {
-			trace = new ThreadTrace(thread);
+			// TODO
+			// trace = new ThreadTrace(thread);
+			trace = new SystemPropertiesThreadTrace(thread, this.writer);
 			traceMap.put(thread, trace);
 		}
 		return trace;
@@ -332,7 +335,7 @@ public class EventThread extends Thread {
 	}
 
 	void threadDeathEvent(ThreadDeathEvent event) {
-		ThreadTrace trace = traceMap.get(event.thread());
+		IThreadTrace trace = traceMap.get(event.thread());
 		if (trace != null) { // only want threads we care about
 			trace.threadDeathEvent(event); // Forward event
 		}
@@ -350,14 +353,13 @@ public class EventThread extends Thread {
 			for (int i = 0; i < excludes.length; ++i) {
 				req.addClassExclusionFilter(excludes[i]);
 			}
-			req.addClassFilter("java.util.Properties");
-			req.setSuspendPolicy(EventRequest.SUSPEND_NONE);
+			req.setSuspendPolicy(EventRequest.SUSPEND_ALL);
 			req.enable();
 		}
 	}
 
 	private void exceptionEvent(ExceptionEvent event) {
-		ThreadTrace trace = traceMap.get(event.thread());
+		IThreadTrace trace = traceMap.get(event.thread());
 		if (trace != null) { // only want threads we care about
 			trace.exceptionEvent(event); // Forward event
 		}
