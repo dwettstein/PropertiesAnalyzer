@@ -1,0 +1,5 @@
+Output in bin\output.txt:
+
+cd "D:\David\Eclipse Projects\PropertiesAnalyzer\bin"
+
+java -cp "..\tools.jar;." props.Trace -all -output output.txt props.Count

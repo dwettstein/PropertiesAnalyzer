@@ -2,6 +2,7 @@ package props;
 
 import java.io.PrintWriter;
 
+import com.sun.jdi.AbsentInformationException;
 import com.sun.jdi.IncompatibleThreadStateException;
 import com.sun.jdi.ThreadReference;
 import com.sun.jdi.event.ExceptionEvent;
@@ -26,6 +27,13 @@ public class SystemPropertiesThreadTrace extends AbstractThreadTrace {
 		writer.println("====== " + thread.name() + " ======");
 	}
 
+	/**
+	 * Checks if the method of the event is one of our accepted methods.
+	 * 
+	 * @param event
+	 *            the event to check
+	 * @return true, if method name accepted
+	 */
 	private boolean checkMethodName(Object event) {
 		int c = 0;
 		if (event instanceof MethodEntryEvent) {
@@ -58,24 +66,22 @@ public class SystemPropertiesThreadTrace extends AbstractThreadTrace {
 			if (!checkMethodName(event))
 				return;
 
-			if (event.thread().frames().size() > 1) {
-				writer.println(event.method().name());
-				writer.println(event.thread().frame(1).location().getClass());
-				writer.println(event.thread().frame(1).location().method());
-				writer.println(event.thread().frame(1).getArgumentValues());
-				writer.println(event.returnValue());
-				// writer.println(event.thread().frame(1).location().lineNumber());
-				writer.println();
-			}
+			// Getting the last frame
+			int f = event.thread().frames().size() - 1;
 
-			else {
-				writer.println(event.method().name());
-				writer.println(event.thread().frame(0).location().getClass());
-				writer.println(event.thread().frame(0).location().method());
-				writer.println(event.thread().frame(0).getArgumentValues());
-				writer.println(event.returnValue());
-				writer.println();
+			writer.println(event.method());
+			writer.println(event.thread().frame(f).location().declaringType()
+					.name());
+			writer.println(event.thread().frame(f).location().method());
+			writer.println(event.thread().frame(f).location().lineNumber());
+			try {
+				writer.println(event.thread().frame(f).location().sourcePath());
+			} catch (AbsentInformationException e) {
+				// e.printStackTrace();
 			}
+			writer.println(event.thread().frame(f).getArgumentValues());
+			writer.println(event.returnValue());
+			writer.println();
 		} catch (IncompatibleThreadStateException e) {
 			e.printStackTrace();
 		}

@@ -1,4 +1,5 @@
 package props;
+
 import java.util.Properties;
 
 class Count {
@@ -17,7 +18,6 @@ class Count {
 
 		System.out.println("Property: " + ", value: "
 				+ props.getProperty("haba", "default"));
-
 	}
 
 	public static int count(String s, char c) {

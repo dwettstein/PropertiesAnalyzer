@@ -1,0 +1,20 @@
+-name of method
+event.method().name()
+
+-name of class which called method
+event.thread().frame(f).location().declaringType().name()
+
+-name of method which called method
+event.thread().frame(f).location().method()
+
+-linenumber of called method in class
+event.thread().frame(f).location().lineNumber()
+
+-arguments of called method
+event.thread().frame(f).getArgumentValues()
+
+-return value of called method
+event.returnValue()
+
+-source path (if not absent)
+event.thread().frame(f).location().sourcePath()
