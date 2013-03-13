@@ -63,24 +63,25 @@ public class SystemPropertiesThreadTrace extends AbstractThreadTrace {
 	@Override
 	public void methodExitEvent(MethodExitEvent event) {
 		try {
+			// We only want events with the accepted methods
 			if (!checkMethodName(event))
 				return;
 
 			// Getting the last frame
 			int f = event.thread().frames().size() - 1;
 
-			writer.println(event.method());
+			writer.println(event.method().name());
+			writer.println(event.thread().frame(f).getArgumentValues());
+			writer.println(event.returnValue());
 			writer.println(event.thread().frame(f).location().declaringType()
 					.name());
 			writer.println(event.thread().frame(f).location().method());
-			writer.println(event.thread().frame(f).location().lineNumber());
 			try {
 				writer.println(event.thread().frame(f).location().sourcePath());
 			} catch (AbsentInformationException e) {
 				// e.printStackTrace();
 			}
-			writer.println(event.thread().frame(f).getArgumentValues());
-			writer.println(event.returnValue());
+			writer.println(event.thread().frame(f).location().lineNumber());
 			writer.println();
 		} catch (IncompatibleThreadStateException e) {
 			e.printStackTrace();
