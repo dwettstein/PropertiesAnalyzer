@@ -18,6 +18,8 @@ class Count {
 
 		System.out.println("Property: " + ", value: "
 				+ props.getProperty("haba", "default"));
+
+		System.out.println("OS: " + System.getProperty("os.name"));
 	}
 
 	public static int count(String s, char c) {
