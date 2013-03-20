@@ -1,5 +1,24 @@
-Output in bin\output.txt:
+
+1) Compile with Javac:
+
+cd "D:\David\Eclipse Projects\PropertiesAnalyzer"
+javac -cp ".;tools.jar" -d ".\bin" src\trace\*
+
+2) Run with Java: (Output in bin\output.txt)
 
 cd "D:\David\Eclipse Projects\PropertiesAnalyzer\bin"
+java -cp ".;..\aspectjrt.jar;..\tools.jar" trace.Trace -all -output output.txt trace.Count
 
-java -cp "..\tools.jar;." props.Trace -all -output output.txt props.Count
+----------------------------------------------------------------------------
+
+1) Compile with AspectJ ajc:
+
+cd "D:\David\Eclipse Projects\PropertiesAnalyzer"
+ajc -1.7 -cp ".;aspectjrt.jar;tools.jar" -d ".\bin" -sourceroots ".\src\trace"
+
+2) Run with AspectJ:
+
+cd "D:\David\Eclipse Projects\PropertiesAnalyzer\bin"
+java -cp ".;..\aspectjrt.jar;..\tools.jar" trace.Count
+
+(tools.jar only needed if JDI is used)
