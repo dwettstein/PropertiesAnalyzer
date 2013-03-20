@@ -1,4 +1,4 @@
-package props;
+package trace;
 
 public aspect AspectProps {
 	before(): call(* java.util.Properties.* (..)) {

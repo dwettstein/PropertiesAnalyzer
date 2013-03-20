@@ -1,4 +1,4 @@
-package props;
+package trace;
 
 import com.sun.jdi.event.ExceptionEvent;
 import com.sun.jdi.event.MethodEntryEvent;
