@@ -16,10 +16,12 @@ class Count {
 
 		props.list(System.out);
 
-		System.out.println("Property: " + ", value: "
-				+ props.getProperty("haba", "default"));
+		String name = props.getProperty("haba", "default");
 
-		System.out.println("OS: " + System.getProperty("os.name"));
+		System.out.println("Property: " + ", value: " + name);
+
+		String osName = System.getProperty("os.name");
+		System.out.println("OS: " + osName);
 	}
 
 	public static int count(String s, char c) {

@@ -249,7 +249,8 @@ public class EventThread extends Thread {
 		if (trace == null) {
 			// TODO
 			// trace = new ThreadTrace(thread);
-			trace = new SystemPropertiesThreadTrace(thread, this.writer);
+			// trace = new SystemPropertiesThreadTrace(thread, this.writer);
+			trace = new PropertiesModelThreadTrace(thread, this.writer);
 			traceMap.put(thread, trace);
 		}
 		return trace;

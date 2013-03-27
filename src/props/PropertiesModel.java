@@ -16,6 +16,15 @@ public class PropertiesModel {
 	 * @return the properties
 	 */
 	public ArrayList<Property> getProperties() {
-		return properties;
+		return this.properties;
 	}
+
+	/**
+	 * @param properties
+	 *            the properties to set
+	 */
+	public void addProperty(Property property) {
+		this.properties.add(property);
+	}
+
 }
