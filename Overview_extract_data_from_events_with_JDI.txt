@@ -1,6 +1,9 @@
 -name of method
 event.method().name()
 
+-name of class (java.lang.System, java.util.Properties etc.)
+event.thread().frame(0).location().declaringType().name()
+
 -name of class which called method
 event.thread().frame(f).location().declaringType().name()
 
@@ -18,3 +21,7 @@ event.returnValue()
 
 -source path (if not absent)
 event.thread().frame(f).location().sourcePath()
+
+--------------------------------------------------
+f is the last frame of the thread:
+int f = event.thread().frames().size() - 1;
